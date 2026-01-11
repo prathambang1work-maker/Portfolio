@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color:#1c1c2b;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;   
+            min-height: 100vh;
+            margin: 0;
+            padding-top: 50px;
+        }
+
+        /* Enlarged Profile Image - Top Right */
+        .corner-profile {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+        }
+
+        .main-avatar {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px ;
+            box-shadow: 0 0 20px darkkhaki;
+        }
+
+        .head {
+            /* Solid text color */
+            color:cadetblue; 
+            /* Gradient background box */
+            background:cornsilk;
+            padding:10px;
+            border-radius: 50px; /* Pill shape */
+            font-size: 55px;
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: -1px;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0, 212, 255, 0.2);
+        }
+
+        .sub-text {
+            /* Added specific color/gradient to subtext */
+            color: #00d4ff;
+            font-weight: 500;
+            margin-bottom: 5px;
+            font-size: 20px;
+        }
+
+        #typing-text {
+            font-size: 40px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color:dodgerblue;
+            letter-spacing: 1px;
+            height: 40px;
+        }
+
+        /* Original Card Styles Restored */
+        .container {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 10px;
+            justify-content: center;
+        }
+
+        .card {
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            width: 300px;
+            padding: 24px;
+            display: flex; 
+            align-items: center;
+            gap: 20px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: white;
+        }
+
+        .card:hover {
+            transform: translateY(-8px);
+            border-color:lawngreen;
+            background-color: #222;
+            box-shadow: 0 10px 20px greenyellow;
+        }
+
+        .card-icon {
+            width: 75px;
+            height: 75px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 5px);
+            background-color: #333;
+            border-radius: 10px;
+        }
+
+        .content h3 {
+            margin: 0;
+            font-size: 29px;
+            color: #00d4ff;
+        }
+
+        .content p {
+            margin: 5px 0 0 0;
+            font-size: 16 px;
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="corner-profile">
+        <img id="main-avatar" src="images/dp.png" class="main-avatar" alt="Admin">
+    </div>
+
+    <h1 id="admin-display-name" class="head">Pratham Bang</h1>
+    <p class="sub-text">Welcome back! Manage your portfolio content from here.</p>
+    <h2 id="typing-text"></h2>
+
+    <div class="container">
+        <a href="profile.html" class="card">
+            <img src="images/dp.png" id="card-avatar" alt="Profile" class="card-icon">
+            <div class="content">
+                <h3>Profile</h3>
+                <p>Click to view stats.</p>
+            </div>
+        </a>
+
+        <a href="project.html" class="card">
+            <img src="images/project.png" alt="Projects" class="card-icon">
+            <div class="content">
+                <h3>Projects</h3>
+                <p>Click to view reports.</p>
+            </div>
+        </a>
+
+        <a href="skills.html" class="card">
+            <img src="images/skills icon.png" alt="Skills" class="card-icon">
+            <div class="content">
+                <h3>Skills</h3>
+                <p>Click to edit profile.</p>
+            </div>
+        </a>
+    </div>
+
+    <div class="container">
+        <a href="certificate.html" class="card">
+            <img src="images/certificate icon.png" alt="Cert" class="card-icon">
+            <div class="content">
+                <h3>Certificate</h3>
+                <p>Click to view reports.</p>
+            </div>
+        </a>
+
+        <a href="certificate.html" class="card">
+            <img src="images/acheivement.png" alt="Achiev" class="card-icon">
+            <div class="content">
+                <h3>Achievements</h3>
+                <p>Click to view reports.</p>
+            </div>
+        </a>
+    </div>
+
+<script>
+    function loadDashboardData() {
+        const textElement = document.getElementById('typing-text');
+        const mainAvatar = document.getElementById('main-avatar');
+        const cardAvatar = document.getElementById('card-avatar');
+        const nameHeading = document.getElementById('admin-display-name');
+
+        const savedImg = localStorage.getItem('adminProfileImg');
+        if(savedImg) {
+            mainAvatar.src = savedImg;
+            if(cardAvatar) cardAvatar.src = savedImg;
+        }
+
+        const savedName = localStorage.getItem('adminName');
+        
+
+        const intros = JSON.parse(localStorage.getItem('adminHeadlines')) || ["Admin", "Developer"];
+        let index = 0;
+
+        if (intros.length > 0) {
+            textElement.textContent = intros[0];
+            if (intros.length > 1) {
+                setInterval(() => {
+                    index = (index + 1) % intros.length;
+                    textElement.textContent = intros[index];
+                }, 4000); 
+            }
+        }
+    }
+
+    window.onload = loadDashboardData;
+</script>
+
+</body>
+</html>

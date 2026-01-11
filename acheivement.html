@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Assets & Achievements</title>
+    <style>
+        /* Theme: Deep Space Navy with Cyan Accents */
+        body {
+            background-color: #0d0d1a; /* Midnight Blue */
+            color: #e0e0e0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px;
+            background: radial-gradient(circle at top right, #1e1e38 0%, #0d0d1a 100%);
+            background-attachment: fixed;
+        }
+
+        .container { max-width: 1100px; margin: 0 auto; position: relative; }
+
+        .nav-header {
+            display: flex;
+            justify-content: space-between; 
+            align-items: flex-end;
+            margin-bottom: 30px;
+        }
+
+        .back-dashboard-text {
+            color: #9ca3af;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: 0.2s;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .back-dashboard-text:hover {
+            color: #00d4ff;
+            text-decoration: underline;
+        }
+
+        /* Solid Text on Gradient Heading */
+        .title-section h1 {
+            font-size: 1.8rem;
+            color: #0d0d1a; 
+            background: linear-gradient(to right, #ffffff, #00d4ff);
+            padding: 12px 25px;
+            border-radius: 8px;
+            display: inline-block;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.2);
+        }
+
+        /* Grid Layout */
+        .cert-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        /* Fixed Size Card */
+        .cert-card {
+            background: #161625;
+            border: 1px solid #2d2d3d;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 380px; 
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .cert-card:hover {
+            transform: translateY(-5px);
+            border-color: #00d4ff;
+        }
+
+        .preview-box {
+            width: 100%;
+            height: 180px;
+            background: #0a0a14;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-bottom: 1px solid #2d2d3d;
+        }
+
+        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
+        
+        .file-icon-placeholder {
+            font-size: 3.5rem;
+            color: #4b5563;
+            text-align: center;
+        }
+
+        .card-content { 
+            padding: 20px; 
+            flex-grow: 1; 
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .card-content h3 { 
+            margin: 0 0 8px 0; 
+            color: #00d4ff; 
+            font-size: 1.3rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .card-content p { 
+            margin: 0 0 10px 0; 
+            font-size: 0.9rem; 
+            color: #aaa; 
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+        }
+
+        .footer-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto; 
+            border-top: 1px solid #2d2d3d;
+            padding-top: 12px;
+        }
+
+        .upload-date { font-size: 0.75rem; color: #555; }
+        
+        .action-btns { display: flex; gap: 8px; }
+        .btn { border: none; padding: 7px 12px; border-radius: 5px; cursor: pointer; font-size: 0.75rem; font-weight: bold; text-decoration: none; transition: 0.2s; }
+        .btn-view { background: #00d4ff; color: #000; }
+        .btn-view:hover { background: #ffffff; }
+        .btn-del { background: #dc2626; color: white; }
+        .btn-del:hover { background: #ff4d4d; }
+
+        /* Add New Button - Top Right Corner */
+        .btn-add-new {
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px dashed #00d4ff;
+            color: #00d4ff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-add-new:hover {
+            background: #00d4ff;
+            color: #000;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.85);
+            justify-content: center; align-items: center; z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: #1e1e30; padding: 30px; border-radius: 12px;
+            width: 420px; display: flex; flex-direction: column; gap: 15px;
+            border: 1px solid #2d2d3d;
+        }
+        .modal-content h2 { color: #00d4ff; margin-top: 0; }
+        .modal-content input, .modal-content textarea {
+            background: #0d0d1a; border: 1px solid #374151; padding: 12px; color: white; border-radius: 6px;
+            font-size: 14px;
+        }
+        .save-btn { background: #00d4ff; color: black; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <a href="portfolio dashboard.html" class="back-dashboard-text">← Back to Dashboard</a>
+    
+    <div class="nav-header">
+        <div class="title-section">
+            <h1>Achievements & Project Assets</h1>
+        </div>
+        <button class="btn-add-new" onclick="openModal()">
+            <span>+</span> Add acheivement
+        </button>
+    </div>
+
+    <div class="cert-grid" id="certGrid"></div>
+</div>
+
+<div id="certModal" class="modal">
+    <div class="modal-content">
+        <h2>Add Achievement</h2>
+        <input type="file" id="fileInput">
+        <input type="text" id="certTitle" placeholder="Project Name / File Title">
+        <textarea id="certPara" placeholder="Details, descriptions, or project notes..." rows="3"></textarea>
+        <button class="save-btn" onclick="saveCertificate()">Save to Gallery</button>
+        <button onclick="closeModal()" style="background:none; border:none; color:#888; cursor:pointer; margin-top: 5px;">Cancel</button>
+    </div>
+</div>
+
+<script>
+    const certGrid = document.getElementById('certGrid');
+    const modal = document.getElementById('certModal');
+    let fileData = { base64: "", type: "" };
+
+    // Unified LocalStorage Key
+    const STORAGE_KEY = 'achievementFiles';
+
+    window.onload = displayCertificates;
+
+    function openModal() { modal.style.display = 'flex'; }
+    function closeModal() { modal.style.display = 'none'; resetForm(); }
+
+    function resetForm() {
+        document.getElementById('certTitle').value = "";
+        document.getElementById('certPara').value = "";
+        document.getElementById('fileInput').value = "";
+        fileData = { base64: "", type: "" };
+    }
+
+    // Handle File Conversion
+    document.getElementById('fileInput').onchange = function(e) {
+        const file = e.target.files[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = function() {
+            fileData.base64 = reader.result;
+            fileData.type = file.type;
+        };
+        reader.readAsDataURL(file);
+    };
+
+    // SAVE DATA
+    function saveCertificate() {
+        const title = document.getElementById('certTitle').value;
+        const para = document.getElementById('certPara').value;
+        const date = new Date().toLocaleDateString('en-GB');
+
+        if (!fileData.base64 || !title) return alert("Please select a file and enter a title.");
+
+        const newEntry = {
+            id: Date.now(),
+            file: fileData.base64,
+            type: fileData.type,
+            title: title,
+            para: para,
+            date: date
+        };
+
+        const currentData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        currentData.push(newEntry);
+        
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
+
+        closeModal();
+        displayCertificates();
+    }
+
+    // LOAD & DISPLAY DATA
+    function displayCertificates() {
+        const currentData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        certGrid.innerHTML = ""; 
+
+        if (currentData.length === 0) {
+            certGrid.innerHTML = '<p style="color: #555; grid-column: 1/-1; text-align: center; margin-top: 50px;">No assets uploaded yet. Click the button above to add one.</p>';
+            return;
+        }
+
+        currentData.forEach(item => {
+            const isImage = item.type.startsWith('image/');
+            const previewContent = isImage 
+                ? `<img src="${item.file}">` 
+                : `<div class="file-icon-placeholder">📂<br><span style="font-size:0.7rem">${item.type.split('/')[1]?.toUpperCase() || 'FILE'}</span></div>`;
+
+            const card = document.createElement('div');
+            card.className = 'cert-card';
+            card.innerHTML = `
+                <div class="preview-box">${previewContent}</div>
+                <div class="card-content">
+                    <h3>${item.title}</h3>
+                    <p>${item.para}</p>
+                    <div class="footer-info">
+                        <span class="upload-date">${item.date}</span>
+                        <div class="action-btns">
+                            <a href="${item.file}" download="${item.title}" class="btn btn-view">Download</a>
+                            <button class="btn btn-del" onclick="deleteEntry(${item.id})">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            certGrid.appendChild(card);
+        });
+    }
+
+    // DELETE ENTRY
+    function deleteEntry(id) {
+        if(!confirm("Are you sure you want to remove this achievement?")) return;
+        
+        let currentData = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+        currentData = currentData.filter(item => item.id !== id);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(currentData));
+        
+        displayCertificates();
+    }
+</script>
+
+</body>
+</html>

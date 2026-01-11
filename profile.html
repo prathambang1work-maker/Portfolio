@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile Settings</title>
+<style>
+    body { 
+      background-color: #0d0d1a; 
+      color: #e0e0e0; 
+      font-family: sans-serif; 
+      margin: 0; 
+      padding: 40px; }
+    .container { 
+        max-width: 900px; 
+        margin: 0 auto; }
+    .header { 
+        display: flex; 
+        justify-content:space-between; 
+        align-items: center; 
+        margin-bottom: 30px; }
+    .card { 
+        background-color: #161625; 
+        border: 1px solid #2d2d3d; 
+        border-radius: 12px;
+        padding: 30px; }
+    .section-header { 
+        display: flex; 
+        align-items: center; 
+        margin-bottom: 25px; }
+    .icon-box { 
+        background: #2d2d44; 
+        color: #a78bfa; 
+        padding: 8px; 
+        border-radius: 6px; 
+        margin-right: 12px; }
+    .grid { 
+        display: grid; 
+        grid-template-columns: 1fr 1fr; 
+        gap: 40px; }
+    label { 
+        display: block; 
+        font-size: 0.85rem; 
+        color: #9ca3af; 
+        margin-bottom: 8px; }
+    input[type="text"] { 
+        width: 100%; 
+        background: #1e1e30; 
+        border: 1px solid #374151; 
+        border-radius: 6px; 
+        padding: 10px; 
+        color: white; 
+        box-sizing: border-box; }
+    .btn-save { 
+        background-color: #7c3aed; 
+        color: white; 
+        border: none; 
+        padding: 10px 20px; 
+        border-radius: 8px; 
+        cursor: pointer; 
+        font-weight: bold; 
+        transition: 0.2s; }
+    .btn-save:hover { 
+        background-color: #6d28d9; }
+    .btn-delete {
+         background-color: #dc2626; 
+         color: white; 
+         border: none; 
+         border-radius: 6px; 
+         padding: 0 15px; 
+         cursor: pointer; }
+    .row { 
+        display: flex; 
+        gap: 10px; 
+        margin-bottom: 12px; }
+    
+    /* Image Upload Styles */
+    .profile-preview { 
+        width: 100px; 
+        height: 100px; 
+        border-radius: 50%; 
+        object-fit: cover; 
+        border: 2px solid #2d2d44; 
+        margin-bottom: 10px; 
+        display: block; }
+    #fileInput { 
+        display: none; }
+    .choose-btn { 
+        background: white; 
+        color: black; 
+        padding: 8px 15px; 
+        border-radius: 20px; 
+        font-size: 0.8rem; 
+        cursor: pointer; 
+        display: inline-block; }
+    a.back-link { 
+        color: #9ca3af; 
+        text-decoration: none; 
+        font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div>
+            <a href="portfolio dashboard.html" class="back-link">← Back to Dashboard</a>
+            <h1 style="margin:10px 0 0 0;">Profile Settings</h1>
+        </div>
+        <button class="btn-save" onclick="saveAll()">Save Changes</button>
+    </div>
+
+    <div class="card">
+        <div class="section-header">
+            <div class="icon-box">👤</div>
+            <h2 style="margin:0; font-size: 1.2rem;">Basic Information</h2>
+        </div>
+
+        <div class="grid">
+            <div>
+                <label>Profile Picture</label>
+                <div style="margin-top: 15px;">
+                    <img id="imgPreview" src="images/dp.png" class="profile-preview">
+                    <input type="file" id="fileInput" accept="image/*" onchange="previewImage(this)">
+                    <label for="fileInput" class="choose-btn">Choose File</label>
+                </div>
+            </div>
+
+            <div>
+                <div style="margin-bottom: 20px;">
+                    <label>Full Name</label>
+                    <input type="text" id="userName" placeholder="Your Name">
+                </div>
+
+                <div>
+                    <label>Changing Text (Rotating Headlines)</label>
+                    <div id="headlines-list">
+                        </div>
+                    <button onclick="addInput()" style="background:none; 
+                    border:1px dashed #444; 
+                    color:#aaa; width:100%; 
+                    padding:8px; cursor:pointer; 
+                    border-radius:6px; margin-top:5px;">+ Add More</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let base64Image = "";
+
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('imgPreview').src = e.target.result;
+                base64Image = e.target.result; // Save base64 string
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    function addInput(value = "") {
+        const div = document.createElement('div');
+        div.className = 'row';
+        div.innerHTML = `
+            <input type="text" class="headline-input" placeholder="Enter text..." value="${value}">
+            <button class="btn-delete" onclick="this.parentElement.remove()">X</button>
+        `;
+        document.getElementById('headlines-list').appendChild(div);
+    }
+
+    function saveAll() {
+        const name = document.getElementById('userName').value;
+        const inputs = document.querySelectorAll('.headline-input');
+        const headlines = [];
+        
+        inputs.forEach(input => {
+            if (input.value.trim() !== "") {
+                headlines.push(input.value);
+            }
+        });
+
+        localStorage.setItem('adminName', name);
+        localStorage.setItem('adminHeadlines', JSON.stringify(headlines));
+        if(base64Image) {
+            localStorage.setItem('adminProfileImg', base64Image);
+        }
+
+        alert("Profile Updated Successfully!");
+    }
+
+    function loadProfileData() {
+        // Load Name
+        document.getElementById('userName').value = localStorage.getItem('adminName') || "";
+        
+        // Load Image
+        const savedImg = localStorage.getItem('adminProfileImg');
+        if(savedImg) {
+            document.getElementById('imgPreview').src = savedImg;
+            base64Image = savedImg;
+        }
+
+        // Load Headlines
+        const storedHeadlines = JSON.parse(localStorage.getItem('adminHeadlines')) || [];
+        const headlineList = document.getElementById('headlines-list');
+        headlineList.innerHTML = '';
+
+        if (storedHeadlines.length === 0) {
+            addInput(); // Add one empty input if none exist
+        } else {
+            storedHeadlines.forEach(headline => addInput(headline));
+        }
+    }
+
+    window.onload = loadProfileData;
+</script>
+</body>
+</html>

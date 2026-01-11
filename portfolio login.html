@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family:'Segoe UI';
+            background-color:cornsilk;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 550px;
+            color: white;
+        }
+
+        .login-card {
+            background: #1e1e1e;
+            padding: 20px;
+            width: 320px;
+            text-align: center;
+            border: 2px solid #333;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            background: #2a2a2a;
+            color: white;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #00ff88;
+            color: #121212;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        #errorMessage {
+            color: #ff4d4d;
+            font-size: 14px;
+            margin-top: 10px;
+            display: none;
+        }
+        #log{
+            color:beige;
+
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-card">
+    <h2 id="log">Login</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="validateLogin()">Login</button>
+    <p id="errorMessage">Invalid Username or Password</p>
+</div>
+
+<script>
+    function validateLogin() {
+        const user = document.getElementById('username').value;
+        const pass = document.getElementById('password').value;
+        const error = document.getElementById('errorMessage');
+
+        if (user === "Pratham Bang" && pass === "Pratham@22") {
+            alert("Access Granted!");
+            window.location.href = "portfolio dashboard.html";
+        } else {
+            error.style.display = "block";
+        }
+    }
+</script>
+
+</body>
+</html>
