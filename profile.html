@@ -68,7 +68,7 @@
 </div>
 
 <script>
-  // YOUR PROVIDED CREDENTIALS
+// YOUR PROVIDED CREDENTIALS
 const API_KEY = 'AIzaSyBnziBqqKAO39yg8rtTNxL8c_3xJjQWboc';
 const CLIENT_ID = '892225644868-rrc1htua9bhmpdfpt96uklmddpd3jf8a.apps.googleusercontent.com';
 const CONFIG_FILE_NAME = 'portfolio_config.json';
@@ -77,66 +77,48 @@ let accessToken = null;
 let configFilesId = null;
 let selectedImgUrl = "";
 
-// Load Picker API
-function onApiLoad() { 
-    gapi.load('picker', () => { console.log("Picker Loaded"); }); 
+// 1. FAST LOAD: Show data immediately from LocalStorage
+function fastLoad() {
+    const savedName = localStorage.getItem('adminName');
+    const savedImg = localStorage.getItem('adminProfileImg');
+    const savedHeadlines = JSON.parse(localStorage.getItem('adminHeadlines'));
+
+    if (savedName) document.getElementById('userName').value = savedName;
+    if (savedImg) document.getElementById('imgPreview').src = savedImg;
+    
+    const list = document.getElementById('headlines-list');
+    list.innerHTML = ""; // Clear default
+    if (savedHeadlines && savedHeadlines.length > 0) {
+        savedHeadlines.forEach(h => addInput(h));
+    } else {
+        addInput(); // Fallback empty row
+    }
 }
 
-// Auth & Init
+// 2. AUTHENTICATION: Triggered by the "Login to Edit" button
 function initAuth() {
     const tokenClient = google.accounts.oauth2.initTokenClient({
         client_id: CLIENT_ID,
         scope: 'https://www.googleapis.com/auth/drive.file https://www.googleapis.com/auth/drive.readonly',
         callback: (resp) => {
-            if (resp.error !== undefined) {
-                throw (resp);
-            }
             accessToken = resp.access_token;
+            
+            // Show admin tools, hide login button
+            document.getElementById('saveBtn').style.display = 'block';
+            document.getElementById('adminLogin').style.display = 'none';
+            document.querySelector('.choose-btn').style.opacity = '1';
+            document.querySelector('.choose-btn').style.pointerEvents = 'auto';
+            
+            // Sync with actual cloud data to ensure it's fresh
             loadConfigFromDrive();
         },
     });
     tokenClient.requestAccessToken();
 }
 
-// Open Google Drive Picker
-function openPicker() {
-    if (!accessToken) return initAuth();
-    
-    const view = new google.picker.View(google.picker.ViewId.DOCS_IMAGES);
-    const picker = new google.picker.PickerBuilder()
-        .addView(view)
-        .setOAuthToken(accessToken)
-        .setDeveloperKey(API_KEY)
-        .setAppId("892225644868") // This is the Project Number from your Client ID
-        .setOrigin(window.location.protocol + '//' + window.location.host) // Forces GitHub trust
-        .setCallback((data) => {
-            if (data.action == google.picker.Action.PICKED) {
-                const doc = data.docs[0];
-                // Use a high-quality thumbnail if available
-                selectedImgUrl = doc.thumbnails && doc.thumbnails.length > 0 
-                    ? doc.thumbnails[0].url.replace('s220', 's1000') 
-                    : doc.url;
-                document.getElementById('imgPreview').src = selectedImgUrl;
-            }
-        })
-        .build();
-    picker.setVisible(true);
-}
+// ... (keep addInput, openPicker, and loadConfigFromDrive functions the same)
 
-function addInput(value = "") {
-    const div = document.createElement('div');
-    div.className = 'row';
-    div.innerHTML = `
-        <input type="text" class="headline-input" value="${value}" placeholder="Ex: Web Developer">
-        <button class="btn-delete" onclick="this.parentElement.remove()">X</button>
-    `;
-    document.getElementById('headlines-list').appendChild(div);
-}
-
-// Save JSON data to your Google Drive
 async function saveToDrive() {
-    if (!accessToken) return initAuth();
-    
     const saveBtn = document.getElementById('saveBtn');
     saveBtn.innerText = "Syncing...";
 
@@ -159,60 +141,47 @@ async function saveToDrive() {
         ? `https://www.googleapis.com/upload/drive/v3/files/${configFilesId}?uploadType=multipart`
         : 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
 
-    try {
-        await fetch(url, {
-            method: configFilesId ? 'PATCH' : 'POST',
-            headers: { 'Authorization': 'Bearer ' + accessToken },
-            body: form
-        });
+    await fetch(url, {
+        method: configFilesId ? 'PATCH' : 'POST',
+        headers: { 'Authorization': 'Bearer ' + accessToken },
+        body: form
+    });
 
-        saveBtn.innerText = "Save to Cloud";
-        const status = document.getElementById('status');
-        status.style.display = 'block';
-        setTimeout(() => status.style.display = 'none', 3000);
-        
-        // Backup to localStorage
-        localStorage.setItem('adminName', configData.name);
-        localStorage.setItem('adminHeadlines', JSON.stringify(configData.headlines));
-        localStorage.setItem('adminProfileImg', configData.imgUrl);
-    } catch (err) {
-        alert("Error saving: " + err);
-        saveBtn.innerText = "Save to Cloud";
-    }
-}
+    // CRITICAL: Update LocalStorage after cloud save
+    localStorage.setItem('adminName', configData.name);
+    localStorage.setItem('adminProfileImg', configData.imgUrl);
+    localStorage.setItem('adminHeadlines', JSON.stringify(configData.headlines));
 
-async function loadConfigFromDrive() {
-    try {
-        const response = await fetch(`https://www.googleapis.com/drive/v3/files?q=name='${CONFIG_FILE_NAME}'`, {
-            headers: { 'Authorization': 'Bearer ' + accessToken }
-        });
-        const data = await response.json();
-
-        if (data.files && data.files.length > 0) {
-            configFilesId = data.files[0].id;
-            const fileResp = await fetch(`https://www.googleapis.com/drive/v3/files/${configFilesId}?alt=media`, {
-                headers: { 'Authorization': 'Bearer ' + accessToken }
-            });
-            const config = await fileResp.json();
-            
-            document.getElementById('userName').value = config.name || "";
-            document.getElementById('imgPreview').src = config.imgUrl || "images/dp.png";
-            document.getElementById('headlines-list').innerHTML = "";
-            if (config.headlines) config.headlines.forEach(h => addInput(h));
-        } else {
-            addInput(); 
-        }
-    } catch (err) {
-        console.log("No config found yet.");
-    }
+    saveBtn.innerText = "Save to Cloud";
+    document.getElementById('status').style.display = 'block';
+    setTimeout(() => document.getElementById('status').style.display = 'none', 3000);
 }
 
 window.onload = () => {
-    onApiLoad();
+    gapi.load('picker');
+    
+    // Initial UI state
+    document.getElementById('saveBtn').style.display = 'none';
+    document.querySelector('.choose-btn').style.opacity = '0.5';
+    document.querySelector('.choose-btn').style.pointerEvents = 'none';
+
+    // Show data instantly
+    fastLoad();
+
+    // Add Login button
+    const loginBtn = document.createElement('button');
+    loginBtn.id = "adminLogin";
+    loginBtn.innerText = "Login to Edit";
+    loginBtn.className = "btn-save"; 
+    loginBtn.style.background = "#444";
+    loginBtn.onclick = initAuth;
+    document.querySelector('.header').appendChild(loginBtn);
 };
+</script>
 </script>
 </body>
 </html>
+
 
 
 
